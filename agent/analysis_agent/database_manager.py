@@ -100,14 +100,14 @@ def init_analysis_agent(config):
             return e
 
 
-    image_viewer_agent = get_image_viewer_agent(config)
+    # image_viewer_agent = get_image_viewer_agent(config)
     analysis_agent = LlmAgent(
         name="analysis_agent",
         model=selected_model,
         instruction=instructions_v1_zh,
         description="根据用户的问题，查询岗位信息",
         tools=[analyze_salary_by_industry, analyze_job_distribution_by_industry, gen_job_keywords_wordcloud],
-        sub_agents=[image_viewer_agent],
+        # sub_agents=[image_viewer_agent],
         output_key="analysis_result",
         after_tool_callback=save_query_results,
     )
@@ -116,3 +116,4 @@ def init_analysis_agent(config):
 if __name__ == "__main__":
     config = create_default_config()
     root_agent = init_analysis_agent(config)
+

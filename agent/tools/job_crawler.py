@@ -241,6 +241,6 @@ class JobCrawler:
         file_path = f"{static_dir}/{file_name}"
         filename = analysis.generate_low_saturation_wordcloud(data, file_path, title=f"{city_name}{search_keyword}相关岗位需求词云")
         return {
-            "img_tag": f"< img http://{config.server_url}:12800/img/{file_name} height='900px'>",
+            "img_tag": f"<img src='http://{config.server_url}:12800/img/{file_name}' width='900px'>",
             "data": data
         }

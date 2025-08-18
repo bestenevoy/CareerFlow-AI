@@ -10,7 +10,9 @@ from .tools import get_image_viewer_agent
 from .database_agent.database_manager import init_database_agent
 from .analysis_agent.database_manager import init_analysis_agent
 from .job_recommend_agent.job_recommend_manager import init_job_recommend_agent
+from .resume_agent.resume_agent_manager import init_resume_agent
 from google.adk.agents import Agent, LoopAgent, SequentialAgent
+from .tools.a import mark_file_uploaded  # TODO
 
 
 def save_response(callback_context: CallbackContext, llm_response: LlmResponse) -> None:
@@ -29,8 +31,8 @@ image_viewer_agent = get_image_viewer_agent(config)
 datasearch_agent = init_database_agent(config)
 analysis_agent = init_analysis_agent(config)
 job_recommend_agent = init_job_recommend_agent(config)
+resume_agent = init_resume_agent(config)
 
-from .tools.a import mark_file_uploaded  # TODO
 
 pipeline_agent = SequentialAgent(
     name="pipeline",
@@ -38,13 +40,14 @@ pipeline_agent = SequentialAgent(
     sub_agents=[datasearch_agent, analysis_agent]
 )
 
+
 root_agent = LlmAgent(
     name="basic_agent",
     model=selected_model,
     instruction=instructions_v1_zh,
     description="你是一个专业的岗位调研助手，根据用户需求，生成城市岗位调研报告，或者根据用户需求和调研报告改写用户简历。",
     output_key="labor_market_research",
-    sub_agents=[image_viewer_agent, pipeline_agent, job_recommend_agent],
+    sub_agents=[pipeline_agent, job_recommend_agent, resume_agent],
     # after_model_callback=save_response
     before_model_callback=mark_file_uploaded,
 )
