@@ -87,7 +87,7 @@ class JobCrawler:
 
         # 创建Session类
         self.db = sessionmaker(bind=engine)()
-        self.driver = WebPage('d')
+        # self.driver = WebPage('d')
 
         cities = []
         with open(work_dir / 'citys.json', 'r', encoding='utf-8') as f:
