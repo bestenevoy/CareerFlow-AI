@@ -46,14 +46,12 @@ def init_analysis_agent(config):
                 城市名称，必须在 `get_cities_list()` 返回的可选列表内。
         Returns:
             dict
-                包含两个键值：
-                - file_name (str): 生成的箱线图文件名。
+                - img_tag (str): 生成的薪资分布图片的 markdown 标签。
                 - data (dict): 以行业为键、对应薪资列表为值的统计结果。
         """
         try:
             res = jc.box_analysis(job_name, city_name)
             print('analyze_salary_by_industry', res)
-            tool_context.state['tmp:analyze_salary_by_industry'] = res['file_name']
             return res
         except Exception as e:
             return e
@@ -70,22 +68,45 @@ def init_analysis_agent(config):
 
         Returns:
             dict
-                "file_name": str,  # 生成的分布图文件名
-                "data": dict        # 以行业为键，招聘数量及占比为值的统计结果
+                img_tag: str,  # 生成的分布图文件名
+                data: dict     # 以行业为键，招聘数量及占比为值的统计结果
         """
         try:
             res = jc.pie_analysis(job_name, city_name)
+            return res
+        except Exception as e:
+            return e
+
+    def gen_job_keywords_wordcloud(job_name: str, city_name: str) -> dict:
+        """
+        统计岗位关键字数量，并生成词云图。
+
+        Args:
+            job_name : str
+                职位关键词，例如 "Python"。
+            city_name : str
+                城市名称，必须是 `get_cities_list()` 返回列表中的有效值。
+
+        Returns:
+            dict
+                "file_name": str,  # 生成的分布图markdown <img>标签
+                "data": dict       # 在搜索条件下所有工作岗位的关键字统计结果
+        """
+        try:
+            res = jc.wordcloud(job_name, city_name)
             print('analysis_job_brandIndustry_dist', res)
             return res
         except Exception as e:
             return e
+
+
     image_viewer_agent = get_image_viewer_agent(config)
     analysis_agent = LlmAgent(
         name="analysis_agent",
         model=selected_model,
         instruction=instructions_v1_zh,
         description="根据用户的问题，查询岗位信息",
-        tools=[analyze_salary_by_industry, analyze_job_distribution_by_industry],
+        tools=[analyze_salary_by_industry, analyze_job_distribution_by_industry, gen_job_keywords_wordcloud],
         sub_agents=[image_viewer_agent],
         output_key="analysis_result",
         after_tool_callback=save_query_results,

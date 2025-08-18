@@ -8,15 +8,8 @@ instructions_v1_zh = f"""
 ## 可用工具
 你可以使用以下工具：
 
-1. get_cities_list() -> dict
-    - 目的： 获取可以查询的城市列表
-    - return: 
-        cities: list[str]
-    
-    
-2. get_jobs(jobName: str, cityName: str) -> list
+1. get_jobs(jobName: str, cityName: str) -> list
     - 目的： 获取某个城市的工作岗位和工作名称的岗位列表
-    - Note: 城市名 cityName 必须在 get_cities_list() 返回的列表中
     - 参数：
         - jobName (str): 工作岗位名称
         - cityName (str): 城市名称

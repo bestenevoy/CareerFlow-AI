@@ -28,7 +28,7 @@ instructions_v1_zh = f"""
 ## 可用工具
 你可以使用以下工具：
 
-1. analyze_salary_by_industry(job_name: str, city_name: str) -> dict:
+1. def analyze_salary_by_industry(job_name: str, city_name: str) -> dict:
     根据行业维度统计并可视化对应城市、职位的薪资分布。
     Args:
         job_name : str
@@ -37,50 +37,27 @@ instructions_v1_zh = f"""
             城市名称，必须在 `get_cities_list()` 返回的可选列表内。
     Returns:
         dict
-            - img_tag (str): 生成的薪资分布图片的 markdown 标签。
+            包含两个键值：
+            - file_name (str): 生成的箱线图文件名。
             - data (dict): 以行业为键、对应薪资列表为值的统计结果。
 
 2. analyze_job_distribution_by_industry(job_name: str, city_name: str) -> dict:
     按行业统计指定城市、职位的招聘数量及占比，并生成可视化图表。
 
-    Args:
-        job_name : str
-            职位关键词，例如 Python。
-        city_name : str
-            城市名称，必须是 `get_cities_list()` 返回列表中的有效值。
+    参数
+    ----
+    job_name : str
+        职位关键词，例如 Python。
+    city_name : str
+        城市名称，必须是 `get_cities_list()` 返回列表中的有效值。
 
-    Returns:
-        dict
-            img_tag: str,  # 生成的分布图文件名
-            data: dict     # 以行业为键，招聘数量及占比为值的统计结果
+    返回
+    ----
+    dict
+        file_name: str,  # 生成的分布图文件名
+        data: dict        # 以行业为键，招聘数量及占比为值的统计结果
 
-## 最终答案和生成要求:
-- 形成 markdown 格式的岗位就业调研报告(严格执行)
-- 对于图片的输出全部按照 img 标签的形式，不使用![img](url)的格式进行输出
+最终答案:
+- 形成 markdown 格式的岗位就业调研报告
     需要整合工具生成的图片进行显示，图片需要以markdown格式嵌入到报告中，并进行展示。
-    1. 原样输出 analyze_job_distribution_by_industry 结果中的 img_tag 返回值，作为岗位分布图（饼图）的<img>标签
-    2. 根据analyze_job_distribution_by_industry返回的分布数据输出你对岗位分布数据的理解与洞察
-    3. 原样输出analyze_salary_by_industry生成的职位薪资分布（箱线图）的<img>标签
-    4. 根据analyze_salary_by_industry返回的分布数据输出你对职位薪资分布数据的理解与洞察
-
-    5. 在输出中直接嵌入 gen_job_keywords_wordcloud 生成的岗位需求词云图的<img>标签
-    
-- 生成调研报告之后，需要询问用户是否需要进行简历修改或者进行岗位推荐。
-### 调研报告大纲
-----
-# [某城市] [某职位] 岗位就业调研报告
-## 1. 岗位分布分析
-    1. 岗位分布饼图
-    2. 岗位分布数据理解与洞察
-## 2. 薪资分布分析
-    1. 薪资分布箱线图
-    2. 薪资分布数据理解与洞察
-    
-## 4. 学历与经验要求分析
-## 5. 技术能力要求总结
-## 6. 专业知识要求总结
-## 7. 岗位需求分析
-    1. 岗位需求词云图
-
-----
 """

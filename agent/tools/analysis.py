@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import numpy as np
-
+from wordcloud import WordCloud
 plt.style.use("petroff10")  # 或其他可用样式
 # print(plt.style.available)
 
@@ -27,11 +26,14 @@ def gen_box_plot(data, filename: str):
     parsed_data = {industry: [sum(parse_salary(salary)) / 24 for salary in salaries] for industry, salaries in data.items()}
 
     # 准备绘图数据
+    # 筛选前20个较大值
+    if len(parsed_data) > 15:
+        parsed_data = {k: v for k, v in sorted(parsed_data.items(), key=lambda item: len(item[1]), reverse=True)[:15]}
     industries = list(parsed_data.keys())
     salaries = [parsed_data[industry] for industry in industries]
 
     # 绘制箱型图
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(16, 9))
     plt.boxplot(salaries, labels=industries)
     plt.title("行业薪资箱型图")
     plt.ylabel("月薪（K）")
@@ -55,6 +57,11 @@ def draw_pie_chart(data: dict, filename, explode=None, autopct="%1.1f%%"):
     plt.rcParams["axes.unicode_minus"] = False
     # # plt.style.use('seaborn')
     # plt.style.use("ggplot")  # 或其他可用样式
+
+    # 根据用户的要求，将筛选出的前20个较大值保存为字典
+    # 筛选前20个较大值
+    if len(data) > 15:
+        data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=True)[:15]}
 
     # 动态生成低饱和色系
     def generate_muted_colors(n):
@@ -106,10 +113,10 @@ def draw_pie_chart(data: dict, filename, explode=None, autopct="%1.1f%%"):
 
     # 设置默认explode（如果没有提供）
     if explode is None:
-        explode = [0.03] * n_categories  # 轻微分离所有扇形
+        explode = [0.05] * n_categories  # 轻微分离所有扇形
 
     # 创建饼图
-    fig, ax = plt.subplots(figsize=(max(8, n_categories * 1.5), 6))  # 根据类别数调整宽度
+    fig, ax = plt.subplots(figsize=(16, 8))  # 根据类别数调整宽度
     wedges, texts, autotexts = ax.pie(
         sizes,
         labels=labels,
@@ -119,7 +126,7 @@ def draw_pie_chart(data: dict, filename, explode=None, autopct="%1.1f%%"):
         colors=colors,
         wedgeprops={"linewidth": 0.8, "edgecolor": "white"},
         textprops={"fontsize": 10, "color": "#333333"},
-        pctdistance=0.8,  # 百分比文字位置
+        pctdistance=0.5,  # 百分比文字位置
     )
 
     # 设置标题
@@ -130,12 +137,94 @@ def draw_pie_chart(data: dict, filename, explode=None, autopct="%1.1f%%"):
 
     # 添加图例（当类别过多时）
     if n_categories > 5:
-        plt.legend(wedges, labels, title="分类", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1), fontsize=9)
+        plt.legend(wedges, labels, title="分类", loc="center left", bbox_to_anchor=(1.1, 0.5), fontsize=9)
 
     # 保存图片
     plt.savefig(filename, dpi=720, bbox_inches="tight", transparent=True)
-    plt.close()
     return filename
+
+def generate_low_saturation_wordcloud(data_dict, filename, title="词云", 
+                                     figsize=(16, 9), background_color='white', font_path=None):
+    """
+    生成低饱和度美观词云
+    
+    参数:
+    - data_dict: 包含词语和对应频次的字典
+    - title: 图表标题
+    - figsize: 图表大小
+    - background_color: 背景颜色
+    - font_path: 中文字体路径(Windows: 'C:/Windows/Fonts/simhei.ttf', 
+                 Mac: '/System/Library/Fonts/PingFang.ttc')
+    """
+    
+    # 设置中文字体（如果未提供字体路径，尝试自动检测）
+    if font_path is None:
+        # 尝试常见的中文字体路径
+        possible_fonts = [
+            'C:/Windows/Fonts/simhei.ttf',  # Windows
+            '/System/Library/Fonts/PingFang.ttc',  # Mac
+            '/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf',  # Linux
+            '/System/Library/Fonts/STHeiti Medium.ttc'  # Mac 另一种字体
+        ]
+        
+        for font in possible_fonts:
+            try:
+                # 检查字体文件是否存在
+                with open(font, 'rb'):
+                    font_path = font
+                    break
+            except:
+                continue
+    
+    # 创建词云对象
+    wordcloud = WordCloud(
+        background_color=background_color,
+        width=figsize[0]*100,
+        height=figsize[1]*100,
+        font_path=font_path,  # 指定中文字体
+        colormap='tab20',  # 使用低饱和度的蓝色调
+        max_words=200,
+        contour_width=1,
+        contour_color='lightgray',
+        relative_scaling=0.5
+    )
+    
+    # 生成词云
+    wordcloud.generate_from_frequencies(data_dict)
+    
+    # 显示词云
+    plt.figure(figsize=figsize)
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title(title, pad=20)
+    plt.tight_layout()
+    plt.savefig(filename, dpi=720, bbox_inches="tight", transparent=True)
+    return filename
+
+if __name__ == "__main__":
+    # 示例数据字典
+    word_freq = {
+        '产品A': 100,
+        '产品B': 80,
+        '产品C': 60,
+        '产品D': 40,
+        '产品E': 20,
+        '产品F': 10,
+        '产品G': 15,
+        '产品H': 25,
+        '产品I': 35,
+        '产品J': 45,
+        '产品K': 55,
+        '产品L': 65,
+        '产品M': 75,
+        '产品N': 85,
+        '产品O': 95
+    }
+
+    # 调用函数生成词云
+    generate_low_saturation_wordcloud(word_freq, "a.jpg", title="2023年产品词云")
+
+
 
 
 # 使用示例（测试不同数据量）

@@ -208,7 +208,7 @@ class JobCrawler:
         file_path = f"{static_dir}/{file_name}"
         filename = analysis.gen_box_plot(data, file_path)
         return {
-            "file_name": f"https://{config.server_url}:12800/img/{file_name}",
+            "img_tag": f"<img src='http://{config.server_url}:12800/img/{file_name}' width='900px'/>",
             "data": data
         }
 
@@ -224,6 +224,23 @@ class JobCrawler:
         filename = analysis.draw_pie_chart(data, file_path)
 
         return {
-            "file_name": f"https://{config.server_url}:12800/img/{file_name}",
+            "img_tag": f"<img src='http://{config.server_url}:12800/img/{file_name}' width='900px'/>",
+            "data": data
+        }
+        
+    def wordcloud(self, search_keyword, city_name):
+        job_ls = self.db.query(Job).filter(Job.cityName==city_name, Job.searchKeyword==search_keyword).all()
+        if not job_ls:
+            return "没有找到相关数据"
+        data = {}
+        for job in job_ls:
+            for keyword in job.keywords.split("\n"):
+                data[keyword] = data.get(keyword, 0)
+                data[keyword] += 1
+        file_name = f"{city_name}_{search_keyword}_keywords_wordcloud.png"
+        file_path = f"{static_dir}/{file_name}"
+        filename = analysis.generate_low_saturation_wordcloud(data, file_path, title=f"{city_name}{search_keyword}相关岗位需求词云")
+        return {
+            "img_tag": f"< img http://{config.server_url}:12800/img/{file_name} height='900px'>",
             "data": data
         }

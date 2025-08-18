@@ -93,7 +93,7 @@ def init_database_agent(config):
             A list of jobs
         """
         if not jc.cities_dic.get(cityName, False):
-            return "这个城市名不在城市列表中，请重新通过 get_cities_list() 查询对应城市名"
+            return "这个城市名不在城市列表中，请输入正确的应城市名"
         return [job.to_dict() for job in jc.get_jobs(jobName, cityName)]
 
     database_agent = LlmAgent(
@@ -101,7 +101,7 @@ def init_database_agent(config):
         model=selected_model,
         instruction=instructions_v1_zh,
         description="数据获取Agent。根据用户的问题，查询岗位信息。读取用户上传的文件",
-        tools=[get_cities_list, get_jobs, read_artifact_by_name],
+        tools=[get_jobs, read_artifact_by_name],
         output_key="datasearch_agent_result",
         after_tool_callback=save_query_results,
     )
