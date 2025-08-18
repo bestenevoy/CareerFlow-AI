@@ -1,0 +1,8 @@
+.venv
+.env
+*.db
+*.csv
+__pycache__/
+ignore_dir/
+static/img/*
+uploads/*

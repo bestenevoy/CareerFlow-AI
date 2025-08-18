@@ -1,0 +1,24 @@
+[project]
+name = "Labor_Market_Research"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ai4one>=0.1.6",
+    "drissionpage>=4.1.1.2",
+    "flask>=3.1.1",
+    "google-adk>=1.5.0",
+    "ipykernel>=6.30.1",
+    "litellm>=1.73.1",
+    "loguru>=0.7.3",
+    "matplotlib>=3.10.5",
+    "openai>=1.91.0",
+    "pandas>=2.3.0",
+    "pillow>=11.3.0",
+    "pydantic>=2.11.7",
+    "qrcode>=8.2",
+    "requests>=2.32.4",
+    "seaborn>=0.13.2",
+    "sqlalchemy>=2.0.41",
+]
