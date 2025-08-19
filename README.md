@@ -23,13 +23,12 @@ CareerFlow-AI/
 ├── agent/                          # 多智能体系统
 │   ├── agent.py                    # 主智能体
 │   ├── llm_config.py               # LLM配置
-│   ├── analysis_agent/             # 分析智能体
-│   ├── database_agent/             # 数据库智能体
+│   ├── analysis_agent/             # 数据分析智能体
+│   ├── database_agent/             # 数据获取智能体
 │   ├── job_recommend_agent/        # 职位推荐智能体
-│   └── resume_agent/               # 简历分析智能体
-├── output/                         # 输出目录
+│   └── resume_agent/               # 简历修改智能体
 ├── static/                         # 静态文件
-├── uploads/                        # 上传文件
+├── uploads/                        # 上传文件目录
 ├── pyproject.toml                  # 项目依赖
 └── README.md                       # 本文件
 ```
