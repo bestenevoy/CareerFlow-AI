@@ -88,7 +88,8 @@ class JobCrawler:
 
         # 创建Session类
         self.db = sessionmaker(bind=engine)()
-        self.driver = WebPage('d')
+        # self.driver = WebPage('d')
+        self.driver = None
 
         cities = []
         with open(work_dir / 'citys.json', 'r', encoding='utf-8') as f:
@@ -194,6 +195,7 @@ class JobCrawler:
         job = self.db.query(Job).filter(Job.cityName==cityName, Job.searchKeyword==jobName).first()
         if not job:
             # 没有数据，从网站爬取
+            return []
             for i in range(bench):
                 job_list.extend(self.get_list(jobName, self.cities_dic[cityName], i+1))
             self.pipeline(job_list, jobName)
