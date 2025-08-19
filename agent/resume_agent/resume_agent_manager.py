@@ -30,16 +30,21 @@ def save_query_results(
 def read_resume_file(file_path: str, tool_context: ToolContext) -> str:
     """读取用户上传的简历文件"""
     # print('>>>>> read_resume_file, tool_context.state:', tool_context.state)
-    if not tool_context.state.get('resume_exists', False):
-        return "用户没有上传简历, 请求用户先上传简历"
+    # if not tool_context.state.get('resume_exists', False):
+        # return "用户没有上传简历, 请求用户先上传简历"
     # tool_context.load_artifact('resume_file', file_path)
     resume_file = tool_context.state.get('resume_path')
     print('>>>>> read_resume_file, resume_file:', resume_file)
+    try:
+        with open("./uploads/resume.md", 'r', encoding='utf-8') as file:
+            resume_content = file.read()
+        print('>>>>> read_resume_file, resume_content:', resume_content)
+        return resume_content
+    except Exception as e:
+        print('>>>>> read_resume_file, error:', e)
+        return "读取用户简历失败" + str(e)
 
-    with open(resume_file, 'r', encoding='utf-8') as file:
-        resume_content = file.read()
-    print('>>>>> read_resume_file, resume_content:', resume_content)
-    return resume_content
+
 
 def init_resume_agent(config):
     """Initialize the resume agent with the given configuration."""
