@@ -41,11 +41,11 @@ async def mark_file_uploaded(
                 # 1. 保存文件到本地
                 file_path = os.path.join(UPLOADS_DIR, file_name)
                 version = await callback_context.save_artifact(file_name, part)
-                print("version", version)
-
+                print(">>>>>>>> version", version)
 
                 with open(file_path, "wb") as f:
                     f.write(file_data)
+                print(">>>>>>>> file_data", file_data)
                 
                 print(f"File saved to: {file_path}")
 
@@ -56,7 +56,7 @@ async def mark_file_uploaded(
                     "artifact_name": file_name,
                 }
                 callback_context.state.update(state_update)
-                print(f"State updated: {state_update}")
+                print(f">>>>>>>> State updated: {state_update}")
 
                 # 关键：不要将这个文件 part 添加到 clean_parts 列表中
                 clean_parts.append(Part(text=f"文件已上传，路径：{file_path}，artifact_name文件名：{file_name}，文件版本：{version}"))

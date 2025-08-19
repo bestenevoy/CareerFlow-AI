@@ -1,3 +1,4 @@
+from pydantic import conint
 from sqlalchemy import DateTime, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -87,7 +88,7 @@ class JobCrawler:
 
         # 创建Session类
         self.db = sessionmaker(bind=engine)()
-        # self.driver = WebPage('d')
+        self.driver = WebPage('d')
 
         cities = []
         with open(work_dir / 'citys.json', 'r', encoding='utf-8') as f:
@@ -97,7 +98,7 @@ class JobCrawler:
         for city in cities:
             self.cities_dic[city['name']] = city['code']
 
-    def get_list(self, post_name: str, city: str, page: int, page_num=5):
+    def get_list(self, post_name: str, city: str, page: int, page_num=1):
         # 监听网站数据包，必须在请求之前先执行
         self.driver.listen.start("/wapi/zpgeek/search/joblist.json")
         self.driver.get(f"https://www.zhipin.com/web/geek/job?query={post_name}&city={city}&page={page}&pageSize=30")
@@ -125,19 +126,22 @@ class JobCrawler:
 
     def get_job_details(self, job_id: str):
         job_url = f"https://www.zhipin.com/job_detail/{job_id}.html"
-        time.sleep(random.random() * 3)
+        time.sleep(random.random())
         logger.debug(job_url)
         self.driver.get(job_url)
         detail = self.driver.eles(".job-sec-text")
-        skills = ",".join(self.driver.eles('.job-keyword-list')[0].text.split("\n"))
+        skills = ",".join([li.text for li in self.driver.eles('.job-keyword-list')])
         return detail[0].html, skills
-
 
     def pipeline(self, job_info: list, searchKeyword: str):
         for job in job_info:
             if "K" not in job["salaryDesc"]:
                 continue
-            details, keywords = self.get_job_details(job["encryptJobId"])
+            try:
+                details, keywords = self.get_job_details(job["encryptJobId"])
+            except Exception as e:
+                continue
+
             logger.debug(keywords)
             job_data = {
                 "id": job["encryptJobId"],
@@ -181,6 +185,10 @@ class JobCrawler:
     def get_jobs(self, jobName: str, cityName: str):
         bench = 1
         job_list = []
+        try:
+            jobName = jobName.lower()
+        except:
+            pass
         logger.debug(f"get_jobs {jobName} {cityName}")
 
         job = self.db.query(Job).filter(Job.cityName==cityName, Job.searchKeyword==jobName).first()
@@ -199,6 +207,10 @@ class JobCrawler:
 
     def box_analysis(self, search_keyword, city_name):
         # 查询所有数据
+        try:
+            search_keyword = search_keyword.lower()
+        except:
+            pass
         job_ls = self.db.query(Job).filter(Job.cityName==city_name, Job.searchKeyword==search_keyword).all()
         data = {}
         for job in job_ls:
@@ -208,12 +220,17 @@ class JobCrawler:
         file_path = f"{static_dir}/{file_name}"
         filename = analysis.gen_box_plot(data, file_path)
         return {
-            "img_tag": f"<img src='http://{config.server_url}:12800/img/{file_name}' width='900px'/>",
+            "img_tag": f"<img src='http://{config.server_url}:50001/img/{file_name}' width='900px'/>",
             "data": data
         }
 
     def pie_analysis(self, search_keyword, city_name):
         # 查询所有数据
+        # 查询所有数据
+        try:
+            search_keyword = search_keyword.lower()
+        except:
+            pass
         job_ls = self.db.query(Job).filter(Job.cityName==city_name, Job.searchKeyword==search_keyword).all()
         data = {}
         for job in job_ls:
@@ -224,11 +241,16 @@ class JobCrawler:
         filename = analysis.draw_pie_chart(data, file_path)
 
         return {
-            "img_tag": f"<img src='http://{config.server_url}:12800/img/{file_name}' width='900px'/>",
+            "img_tag": f"<img src='http://{config.server_url}:50001/img/{file_name}' width='900px'/>",
             "data": data
         }
         
     def wordcloud(self, search_keyword, city_name):
+        # 查询所有数据
+        try:
+            search_keyword = search_keyword.lower()
+        except:
+            pass
         job_ls = self.db.query(Job).filter(Job.cityName==city_name, Job.searchKeyword==search_keyword).all()
         if not job_ls:
             return "没有找到相关数据"
@@ -241,6 +263,6 @@ class JobCrawler:
         file_path = f"{static_dir}/{file_name}"
         filename = analysis.generate_low_saturation_wordcloud(data, file_path, title=f"{city_name}{search_keyword}相关岗位需求词云")
         return {
-            "img_tag": f"<img src='http://{config.server_url}:12800/img/{file_name}' width='900px'>",
+            "img_tag": f"<img src='http://{config.server_url}:50001/img/{file_name}' width='900px'>",
             "data": data
         }

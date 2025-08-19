@@ -231,4 +231,4 @@ if __name__ == "__main__":
 # for n in [3, 5, 8, 12]:
 #     data = {f"类别{i+1}": np.random.randint(1, 10) for i in range(n)}
 #     print(data)
-#     draw_pie_chart(data=data, title=f"{n}个分类的示例饼图", filename=f"pie_chart_{n}_categories.png")
+#     draw_pie_chart(data=data, filename=f"pie_chart_{n}_categories.png")
